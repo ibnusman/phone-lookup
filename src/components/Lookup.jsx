@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import parsePhoneNumber from 'libphonenumber-js'
 
+
 const Lookup = () => {
-  const [phone, setPhone] = useState("")
-  const [phoneData, setPhoneData] = useState(null)
-  const [error, setError] = useState("")
+  const [phone, setPhone] = useState("");
+  const [phoneData, setPhoneData] = useState(null);
+  const [error, setError] = useState("");
+
 
   const handleInputChange = (e) => {
     const input = e.target.value
@@ -28,7 +30,15 @@ const Lookup = () => {
       setError("Invalid phone number format")
     }
   }
-
+const copy = ()=> {
+   if (phoneData && phoneData.number) {
+    navigator.clipboard.writeText(phoneData.number)
+      .then(() => alert("Copied!"))
+      .catch(err => console.error("Copy failed", err));
+  } else {
+    alert("No number to copy");
+  }
+}
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 px-4">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">📱 Phone Number Lookup</h1>
@@ -40,6 +50,7 @@ const Lookup = () => {
         onChange={handleInputChange}
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
       />
+      <button onClick={copy}>Copy</button>
 
       {error && (
         <p className="text-red-500 text-sm mt-2">{error}</p>
