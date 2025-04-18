@@ -45,7 +45,7 @@ Input: **+2348021234567**
 Clone the repository and run the development server:
 
 ```bash
-git clone https://github.com/your-username/phone-lookup-app.git
+git clone https://github.com/ibnusman/phone-lookup.git
 cd phone-lookup-app
 npm install
 npm run dev
