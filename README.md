@@ -1,13 +1,52 @@
-# React + Vite
+# 📱 Phone Number Lookup App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a simple React-based application that allows users to input a phone number and instantly view:
 
-Currently, two official plugins are available:
+- The **country** the number belongs to  
+- The **telco/carrier** associated with the number  
+- Whether the number is **possible**  
+- Whether the number is **valid**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# phone-lookup
+- 📍 Country detection based on the number  
+- 🏢 Telco/Carrier lookup  
+- ✅ Validity & possibility check  
+- 🔍 Instant real-time results as the user types  
+- 🎨 Clean UI with Bootstrap styling  
+
+---
+---
+## 🧪 Example Input
+
+- Input: **+2348021234567**
+
+- Output:
+
+- Country: **NG**
+
+- Carrier: **MTN Nigeria**
+
+- Possible: **true**
+
+- Valid: **true**
+
+## 🛠️ Tech Stack
+
+- React (with Vite)  
+- Bootstrap  
+- [`libphonenumber-js`](https://github.com/catamphetamine/libphonenumber-js) for phone number parsing and validation  
+
+---
+
+## 📦 Installation
+
+Clone the repository and run the development server:
+
+```bash
+git clone https://github.com/your-username/phone-lookup-app.git
+cd phone-lookup-app
+npm install
+npm run dev
