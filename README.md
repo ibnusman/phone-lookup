@@ -20,7 +20,7 @@ This is a simple React-based application that allows users to input a phone numb
 ---
 ## 🧪 Example Input
 
-- Input: **+2348021234567**
+Input: **+2348021234567**
 
  **Output**
 
