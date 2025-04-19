@@ -20,13 +20,13 @@ The app is deployed on Vercel: [https://phone-lookup-one.vercel.app](https://pho
 
 Input a phone number into Phone Number Lookup:
 
-**Input**: `+233244XXXXXXX`
+**Input**: `+255744XXXXXXX`
 
 **Output**:
 
 - Country: **NG**
 
-- Telco: **MTN Ghana**
+- Telco: **Vodacom**
 
 - Possible: **true**
 
