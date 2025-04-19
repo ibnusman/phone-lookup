@@ -12,12 +12,24 @@ const Lookup = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const countryMap = {
+    NG: 'Nigeria',
+    KE: 'Kenya',
+    GH: 'Ghana',
+    US: 'USA',
+    GB: 'UK',
+    ZA: 'SouthAfrica',
+    UG: 'Uganda',
+    ZM: 'Zambia',
+    TZ: 'Tanzania',
+  };
+
   const detectCarrier = (number, country) => {
     const cleaned = number.replace(/\D/g, '');
     let local = cleaned;
 
     try {
-      const phoneInfo = parsePhoneNumber(number, country);
+      const phoneInfo = parsePhoneNumber(number, country || 'US');
       if (!phoneInfo || !phoneInfo.countryCallingCode) {
         console.warn('Invalid phone number or country code missing');
         return 'Unknown';
@@ -34,26 +46,20 @@ const Lookup = () => {
       return 'Unknown';
     }
 
-const countryMap = {
-  NG: 'Nigeria',
-  KE: 'Kenya',
-  GH: 'Ghana',
-  US: 'USA',
-  GB: 'UK',
-  ZA: 'SouthAfrica',
-  UG: 'Uganda',
-  ZM: 'Zambia',
-  TZ: 'Tanzania',
-};
-    const telcoCountry = countryMap[country] || country;
-
+    const telcoCountry = countryMap[country] || country || 'USA';
     const prefixes = telcoPrefixes[telcoCountry];
-    if (!prefixes) {
-      console.warn(`No prefixes found for country: ${telcoCountry}`);
+    // console.log(`Prefixes for ${telcoCountry}:`, prefixes); // Debug log
+
+    if (!prefixes || typeof prefixes !== 'object') {
+      console.warn(`Invalid prefixes format for country: ${telcoCountry}`, prefixes);
       return 'Unknown';
     }
 
     for (const carrier in prefixes) {
+      if (!Array.isArray(prefixes[carrier])) {
+        console.warn(`Invalid prefix array for carrier ${carrier} in ${telcoCountry}:`, prefixes[carrier]);
+        continue;
+      }
       if (prefixes[carrier].some((prefix) => local.startsWith(prefix))) {
         return carrier;
       }
@@ -68,10 +74,10 @@ const countryMap = {
       setIsLoading(true);
       try {
         const parsed = parsePhoneNumber(input);
+        // console.log('Parsed phone number:', parsed);
         if (parsed) {
-          const country = parsed.country;
-          const telco = detectCarrier(input, country);
-
+          const country = parsed.country || (parsed.countryCallingCode === '1' ? 'NANP' : undefined);
+          const telco = detectCarrier(input, parsed.country || (parsed.countryCallingCode === '1' ? 'US' : undefined));
           setPhoneData({
             country,
             number: parsed.number,
@@ -80,17 +86,15 @@ const countryMap = {
             telco,
           });
           setError('');
-
-          // Track successful lookup event
           ReactGA.event({
             category: 'Lookup',
             action: 'Phone Lookup Success',
-            label: country,
+            label: country || 'Unknown',
           });
         } else {
+          console.warn('Parsing failed:', parsed);
           setPhoneData(null);
           setError('Please enter a valid phone number with the country code (e.g., +44701234567)');
-          // Track failed lookup event
           ReactGA.event({
             category: 'Lookup',
             action: 'Phone Lookup Failed',
@@ -98,6 +102,7 @@ const countryMap = {
           });
         }
       } catch (err) {
+        console.error('Error in phone number parsing:', err);
         setPhoneData(null);
         setError('Invalid phone number format');
         ReactGA.event({
@@ -126,6 +131,7 @@ const countryMap = {
     setPhone(input);
     setError('');
     debouncedHandleInputChange(input);
+    // console.log('Input value:', phone);
   };
 
   const copy = () => {
@@ -182,79 +188,137 @@ const countryMap = {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-300 to-gray-500 px-4 sm:px-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">📱 Phone Number Lookup</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
+      {/* Fallback CSS for placeholder and input text */}
+      <style>
+        {`
+          input::placeholder {
+            color: #374151; /* Tailwind gray-700 */
+            opacity: 1;
+          }
+          input::-webkit-input-placeholder {
+            color: #374151;
+            opacity: 1;
+          }
+          input::-moz-placeholder {
+            color: #374151;
+            opacity: 1;
+          }
+          input:-ms-input-placeholder {
+            color: #374151;
+            opacity: 1;
+          }
+          #phone-input {
+            color: #111827; /* Tailwind gray-900 */
+            opacity: 1 !important;
+          }
+        `}
+      </style>
 
-      {/* <label htmlFor="phone-input" className="sr-only">
-        Enter phone number for lookup
-      </label> */}
-      <input
-        id="phone-input"
-        type="text"
-        placeholder="e.g. +44701234567"
-        value={phone}
-        onChange={handleInputChange}
-        maxLength="20"
-        aria-label="Enter phone number for lookup"
-        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-      />
-        <span>            </span>
-      <button
-        onClick={copy}
-        aria-label="Copy phone number"
-        className="px-4 py-2 bg-blue-500 text-black rounded-lg shadow-md hover:bg-blue-600 transition mb-4"
-      >
-        Copy
-      </button>
+      {/* Header Section */}
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          📱 Phone Number Lookup
+        </h1>
+        {/* <p className="text-gray-600 text-sm max-w-md mx-auto">
+          Identify telecom providers and the country based on phone numbers and their country codes. Free to use, but carrier information might not always be accurate. Telco data last updated: April 2025.
+        </p> */}
+      </header>
 
-      {isLoading && (
-        <p role="alert" className="text-gray-500 text-sm mt-2">
-          Processing...
-        </p>
-      )}
-      {error && (
-        <p role="alert" className="text-red-500 text-sm mt-2">
-          {error}
-        </p>
-      )}
-
-      {phoneData && (
-        <div className="bg-white shadow-md rounded-xl p-6 mt-4 w-full max-w-md border border-gray-200 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-800">🌍 Country:</span>
-            <img
-              src={`https://flagcdn.com/w20/${phoneData.country.toLowerCase()}.png`}
-              alt={`${phoneData.country} flag`}
-              className="w-6 h-4 object-cover rounded"
-              onError={(e) => (e.target.style.display = 'none')} // Hide broken image
-            />
-            <span className="text-gray-800">{phoneData.country || '🏳️'}</span>
-          </div>
-          <p className="text-gray-800">
-            <span className="font-semibold">📞 Number:</span> {phoneData.number}
-          </p>
-          <p className="text-gray-800">
-            <span className="font-semibold">✅ Possible?</span> {phoneData.isPossible ? 'Yes' : 'No'}
-          </p>
-          <p className="text-gray-800">
-            <span className="font-semibold">✔️ Valid?</span> {phoneData.isValid ? 'Yes' : 'No'}
-          </p>
-          <p className="text-gray-800">
-            <span className="font-semibold">📡 Telco:</span>{' '}
-            {phoneData.telco === 'Unknown'
-              ? 'Carrier lookup not available for this country'
-              : phoneData.telco}
-          </p>
+      {/* Input Section */}
+      <section className="w-full max-w-md mb-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            id="phone-input"
+            type="text"
+            placeholder="e.g. +44701234567"
+            value={phone}
+            onChange={handleInputChange}
+            maxLength="20"
+            aria-label="Enter phone number for lookup"
+            className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-700 text-gray-900"
+          />
+          <button
+            onClick={copy}
+            aria-label="Copy phone number"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
+          >
+            Copy
+          </button>
         </div>
+        {isLoading && (
+          <p role="alert" className="text-gray-500 text-sm mt-2 text-center">
+            Processing...
+          </p>
+        )}
+        {error && (
+          <p role="alert" className="text-red-500 text-sm mt-2 text-center">
+            {error}
+          </p>
+        )}
+      </section>
+
+      {/* Results Section */}
+      {phoneData && (
+        <section className="w-full max-w-md mb-6">
+          <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800">🌍 Country:</span>
+              {phoneData.country === 'NANP' ? (
+                <span className="text-gray-800">NANP (North America)</span>
+              ) : (
+                <>
+                  <img
+                    src={`https://flagcdn.com/w20/${phoneData.country?.toLowerCase()}.png`}
+                    alt={`${phoneData.country} flag`}
+                    className="w-6 h-4 object-cover rounded"
+                    onError={(e) => (e.target.style.display = 'none')}
+                  />
+                  <span className="text-gray-800">{phoneData.country || '🏳️'}</span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800">📞 Number:</span>
+              <span className="text-gray-800">{phoneData.number}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800">✅ Possible?</span>
+              <span className="text-gray-800">{phoneData.isPossible ? 'Yes' : 'No'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800">✔️ Valid?</span>
+              <span className="text-gray-800">{phoneData.isValid ? 'Yes' : 'No'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800">📡 Telco:</span>
+              <span className="text-gray-800">
+                {phoneData.telco === 'Unknown'
+                  ? 'Carrier lookup not available for this country'
+                  : phoneData.telco}
+              </span>
+            </div>
+          </div>
+        </section>
       )}
 
-
-{/* 
-      <div className="mt-4 w-full max-w-md">
-        <div className="h-20 bg-gray-200 flex items-center justify-center text-gray-500">
+      {/* Support and Ad Section */}
+      {/* <footer className="w-full max-w-md text-center">
+        <div className="mb-4">
+          <p className="text-gray-600 mb-2">Enjoying this tool? Support us!</p>
+          <a
+            href="https://buymeacoffee.com/yourusername"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
+          >
+            Buy Me a Coffee ☕
+          </a>
+        </div>
+        <div className="h-20 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg shadow-sm">
           Ad Space (Google AdSense)
         </div>
-      </div> */}
+      </footer> */}
 
       <ToastContainer
         position="top-right"
