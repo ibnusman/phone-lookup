@@ -34,11 +34,17 @@ const Lookup = () => {
       return 'Unknown';
     }
 
-    const countryMap = {
-      NG: 'Nigeria',
-      KE: 'Kenya',
-      GH: 'Ghana',
-    };
+const countryMap = {
+  NG: 'Nigeria',
+  KE: 'Kenya',
+  GH: 'Ghana',
+  US: 'USA',
+  GB: 'UK',
+  ZA: 'SouthAfrica',
+  UG: 'Uganda',
+  ZM: 'Zambia',
+  TZ: 'Tanzania',
+};
     const telcoCountry = countryMap[country] || country;
 
     const prefixes = telcoPrefixes[telcoCountry];
