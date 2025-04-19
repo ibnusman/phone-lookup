@@ -2,30 +2,29 @@ import React, { useState, useCallback } from 'react';
 import parsePhoneNumber from 'libphonenumber-js';
 import debounce from 'lodash/debounce';
 import telcoPrefixes from './data/telcos.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Lookup = () => {
   const [phone, setPhone] = useState('');
   const [phoneData, setPhoneData] = useState(null);
   const [error, setError] = useState('');
-  const [toast, setToast] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const detectCarrier = (number, country) => {
-    // console.log('detectCarrier input:', { number, country }); // Debug log
     const cleaned = number.replace(/\D/g, '');
     let local = cleaned;
 
     try {
       const phoneInfo = parsePhoneNumber(number, country);
-      // console.log('phoneInfo:', phoneInfo); // Debug log
       if (!phoneInfo || !phoneInfo.countryCallingCode) {
         console.warn('Invalid phone number or country code missing');
         return 'Unknown';
       }
 
-      const countryCode = phoneInfo.countryCallingCode; // e.g., "234"
+      const countryCode = phoneInfo.countryCallingCode;
       if (countryCode && cleaned.startsWith(countryCode)) {
-        local = '0' + cleaned.slice(countryCode.length); // Localize the number
+        local = '0' + cleaned.slice(countryCode.length);
       } else {
         console.warn(`Country code ${countryCode} does not match the cleaned number`);
       }
@@ -34,16 +33,12 @@ const Lookup = () => {
       return 'Unknown';
     }
 
-    // console.log('Localized number:', local); // Debug log
-
-    // Map country codes to telcoPrefixes keys
     const countryMap = {
       NG: 'Nigeria',
       KE: 'Kenya',
       GH: 'Ghana',
     };
     const telcoCountry = countryMap[country] || country;
-    // console.log('Telco country:', telcoCountry); // Debug log
 
     const prefixes = telcoPrefixes[telcoCountry];
     if (!prefixes) {
@@ -53,12 +48,11 @@ const Lookup = () => {
 
     for (const carrier in prefixes) {
       if (prefixes[carrier].some((prefix) => local.startsWith(prefix))) {
-        // console.log('Matched carrier:', carrier); // Debug log
         return carrier;
       }
     }
 
-    console.warn('No carrier matched for number:', local); // Debug log
+    console.warn('No carrier matched for number:', local);
     return 'Unknown';
   };
 
@@ -93,32 +87,29 @@ const Lookup = () => {
     []
   );
 
-const handleInputChange = (e) => {
-  const input = e.target.value;
-  if (!/^[+\d\s]*$/.test(input)) {
-    setError('Only numbers, "+", and spaces are allowed');
-    return;
-  }
-  setPhone(input);
-  setError('');
-  setToast('');
-  debouncedHandleInputChange(input);
-};
+  const handleInputChange = (e) => {
+    const input = e.target.value;
+    if (!/^[+\d\s]*$/.test(input)) {
+      setError('Only numbers, "+", and spaces are allowed');
+      return;
+    }
+    setPhone(input);
+    setError('');
+    debouncedHandleInputChange(input);
+  };
+
   const copy = () => {
     if (phoneData?.number) {
       navigator.clipboard
         .writeText(phoneData.number)
         .then(() => {
-          setToast('Number copied!');
-          setTimeout(() => setToast(''), 3000);
+          toast.success('Number copied!', { autoClose: 3000 });
         })
         .catch(() => {
-          setToast('Failed to copy');
-          setTimeout(() => setToast(''), 3000);
+          toast.error('Failed to copy', { autoClose: 3000 });
         });
     } else {
-      setToast('No number to copy');
-      setTimeout(() => setToast(''), 3000);
+      toast.warn('No number to copy', { autoClose: 3000 });
     }
   };
 
@@ -138,37 +129,36 @@ const handleInputChange = (e) => {
       <button
         onClick={copy}
         aria-label="Copy phone number"
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition mb-4"
       >
         Copy
       </button>
 
       {isLoading && <p className="text-gray-500 text-sm mt-2">Processing...</p>}
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-      {toast && <p className="text-green-500 text-sm mt-2">{toast}</p>}
 
       {phoneData && (
         <div className="bg-white shadow-md rounded-xl p-6 mt-4 w-full max-w-md border border-gray-200 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">🌍 Country:</span>
+            <span className="font-semibold text-gray-800">🌍 Country:</span>
             <img
               src={`https://flagcdn.com/w20/${phoneData.country.toLowerCase()}.png`}
               alt={`${phoneData.country} flag`}
               className="w-6 h-4 object-cover rounded"
               onError={(e) => (e.target.src = '/fallback-flag.png')}
             />
-            <span>{phoneData.country}</span>
+            <span className="text-gray-800">{phoneData.country}</span>
           </div>
-          <p>
+          <p className="text-gray-800">
             <span className="font-semibold">📞 Number:</span> {phoneData.number}
           </p>
-          <p>
+          <p className="text-gray-800">
             <span className="font-semibold">✅ Possible?</span> {phoneData.isPossible ? 'Yes' : 'No'}
           </p>
-          <p>
+          <p className="text-gray-800">
             <span className="font-semibold">✔️ Valid?</span> {phoneData.isValid ? 'Yes' : 'No'}
           </p>
-          <p>
+          <p className="text-gray-800">
             <span className="font-semibold">📡 Telco:</span>{' '}
             {phoneData.telco === 'Unknown'
               ? 'Carrier lookup not available for this country'
@@ -176,6 +166,19 @@ const handleInputChange = (e) => {
           </p>
         </div>
       )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
