@@ -20,18 +20,18 @@ const Footer = () => {
         </div>
       </div>
       <p className="mt-4 text-sm">
-        Made by <span className="font-semibold">Abubakar Usman</span>
+        Made by <span className="font-semibold">BA Tech</span>
       </p>
       <div className="mt-2">
-        <a href="https://github.com/abubakar-usman" className="text-blue-400 hover:underline">
+        {/* <a href="https://github.com/abubakar-usman" className="text-blue-400 hover:underline">
           GitHub
-        </a>{' '}
+        </a>{' '} */}
         |{' '}
-        <a href="mailto:abubakar.usman@example.com" className="text-blue-400 hover:underline">
+        <a href="mailto:abucrypto41@gmail.com" className="text-blue-400 hover:underline">
           Contact
         </a>{' '}
         |{' '}
-        <a href="https://www.buymeacoffee.com/abubakarusman" className="text-yellow-400 hover:underline">
+        <a href="https://buymeacoffee.com/batech" className="text-yellow-400 hover:underline">
           Buy Me a Coffee
         </a>
       </div>
