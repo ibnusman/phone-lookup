@@ -192,11 +192,11 @@ const Lookup = () => {
         aria-label="Enter phone number for lookup"
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
       />
-
+        <span>            </span>
       <button
         onClick={copy}
         aria-label="Copy phone number"
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition mb-4"
+        className="px-4 py-2 bg-blue-500 text-black rounded-lg shadow-md hover:bg-blue-600 transition mb-4"
       >
         Copy
       </button>
