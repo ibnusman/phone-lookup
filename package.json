@@ -15,7 +15,9 @@
     "libphonenumber-js": "^1.12.7",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
+    "react-adsense": "^0.1.0",
     "react-dom": "^19.0.0",
+    "react-ga4": "^2.1.0",
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {

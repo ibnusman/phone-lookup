@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import parsePhoneNumber from 'libphonenumber-js';
+import parsePhoneNumber from 'libphonenumber-js/min';
 import debounce from 'lodash/debounce';
 import telcoPrefixes from './data/telcos.js';
 import { ToastContainer, toast } from 'react-toastify';
+import ReactGA from 'react-ga4';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Lookup = () => {
@@ -73,13 +74,31 @@ const Lookup = () => {
             telco,
           });
           setError('');
+
+          // Track successful lookup event
+          ReactGA.event({
+            category: 'Lookup',
+            action: 'Phone Lookup Success',
+            label: country,
+          });
         } else {
           setPhoneData(null);
-          setError('Please enter a valid phone number with the country code (e.g., +254701234567)');
+          setError('Please enter a valid phone number with the country code (e.g., +44701234567)');
+          // Track failed lookup event
+          ReactGA.event({
+            category: 'Lookup',
+            action: 'Phone Lookup Failed',
+            label: 'Invalid Number',
+          });
         }
       } catch (err) {
         setPhoneData(null);
         setError('Invalid phone number format');
+        ReactGA.event({
+          category: 'Lookup',
+          action: 'Phone Lookup Error',
+          label: 'Format Error',
+        });
       } finally {
         setIsLoading(false);
       }
@@ -91,6 +110,11 @@ const Lookup = () => {
     const input = e.target.value;
     if (!/^[+\d\s]*$/.test(input)) {
       setError('Only numbers, "+", and spaces are allowed');
+      ReactGA.event({
+        category: 'Input',
+        action: 'Invalid Input',
+        label: input,
+      });
       return;
     }
     setPhone(input);
@@ -100,16 +124,54 @@ const Lookup = () => {
 
   const copy = () => {
     if (phoneData?.number) {
-      navigator.clipboard
-        .writeText(phoneData.number)
-        .then(() => {
+      if (navigator.clipboard) {
+        navigator.clipboard
+          .writeText(phoneData.number)
+          .then(() => {
+            toast.success('Number copied!', { autoClose: 3000 });
+            ReactGA.event({
+              category: 'Action',
+              action: 'Copy Number',
+              label: phoneData.number,
+            });
+          })
+          .catch(() => {
+            toast.error('Failed to copy', { autoClose: 3000 });
+            ReactGA.event({
+              category: 'Action',
+              action: 'Copy Failed',
+              label: phoneData.number,
+            });
+          });
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = phoneData.number;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
           toast.success('Number copied!', { autoClose: 3000 });
-        })
-        .catch(() => {
+          ReactGA.event({
+            category: 'Action',
+            action: 'Copy Number (Fallback)',
+            label: phoneData.number,
+          });
+        } catch (err) {
           toast.error('Failed to copy', { autoClose: 3000 });
-        });
+          ReactGA.event({
+            category: 'Action',
+            action: 'Copy Failed (Fallback)',
+            label: phoneData.number,
+          });
+        }
+        document.body.removeChild(textarea);
+      }
     } else {
       toast.warn('No number to copy', { autoClose: 3000 });
+      ReactGA.event({
+        category: 'Action',
+        action: 'Copy Attempt - No Number',
+      });
     }
   };
 
@@ -117,11 +179,16 @@ const Lookup = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-300 to-gray-500 px-4 sm:px-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">📱 Phone Number Lookup</h1>
 
+      {/* <label htmlFor="phone-input" className="sr-only">
+        Enter phone number for lookup
+      </label> */}
       <input
+        id="phone-input"
         type="text"
-        placeholder="e.g. +254701234567"
+        placeholder="e.g. +44701234567"
         value={phone}
         onChange={handleInputChange}
+        maxLength="20"
         aria-label="Enter phone number for lookup"
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
       />
@@ -134,8 +201,16 @@ const Lookup = () => {
         Copy
       </button>
 
-      {isLoading && <p className="text-gray-500 text-sm mt-2">Processing...</p>}
-      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      {isLoading && (
+        <p role="alert" className="text-gray-500 text-sm mt-2">
+          Processing...
+        </p>
+      )}
+      {error && (
+        <p role="alert" className="text-red-500 text-sm mt-2">
+          {error}
+        </p>
+      )}
 
       {phoneData && (
         <div className="bg-white shadow-md rounded-xl p-6 mt-4 w-full max-w-md border border-gray-200 space-y-2">
@@ -145,9 +220,9 @@ const Lookup = () => {
               src={`https://flagcdn.com/w20/${phoneData.country.toLowerCase()}.png`}
               alt={`${phoneData.country} flag`}
               className="w-6 h-4 object-cover rounded"
-              onError={(e) => (e.target.src = '/fallback-flag.png')}
+              onError={(e) => (e.target.style.display = 'none')} // Hide broken image
             />
-            <span className="text-gray-800">{phoneData.country}</span>
+            <span className="text-gray-800">{phoneData.country || '🏳️'}</span>
           </div>
           <p className="text-gray-800">
             <span className="font-semibold">📞 Number:</span> {phoneData.number}
@@ -166,6 +241,14 @@ const Lookup = () => {
           </p>
         </div>
       )}
+
+
+{/* 
+      <div className="mt-4 w-full max-w-md">
+        <div className="h-20 bg-gray-200 flex items-center justify-center text-gray-500">
+          Ad Space (Google AdSense)
+        </div>
+      </div> */}
 
       <ToastContainer
         position="top-right"
