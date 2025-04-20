@@ -15,8 +15,10 @@ const Footer = () => {
             marginTop: '20px',
           }}
         >
-          This tool helps you identify telecom providers based on phone numbers. It’s free to use, but please note that
-          carrier information might not always be accurate. Telco data last updated: April 2025.
+          This tool helps you Identify telecom providers and the country based on phone numbers and their country codes using prefix-based lookups. Free to use, but carrier information may not be accurate, especially for ported numbers (which require a separate lookup). 
+          Telco data last updated: April 2025.
+
+
         </div>
       </div>
       <p className="mt-4 text-sm">
