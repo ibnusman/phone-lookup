@@ -49,10 +49,9 @@ export const telcoPrefixes = {
   },
   Tanzania: {
     Vodacom: ['074', '075', '076'],
-    Tigo: ['065', '067', '071'], // Includes Zantel due to merger
+    Yas: ['065', '067', '071','077'], // Includes Zantel due to merger
     Airtel: ['068', '069', '078'],
-    Halotel: ['062'], // Inferred; not directly listed in provided data
-    Zantel: ['077'], // Note: Merging with Tigo, so prefixes may overlap
+    Halotel: ['062','061'], // Inferred; not directly listed in provided data
     Note: 'Mobile number portability (MNP) is likely supported in Tanzania, so prefixes may not reflect the current network provider.'
   }
 };
