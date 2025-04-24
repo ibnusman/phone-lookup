@@ -29,9 +29,9 @@ const Footer = () => {
           GitHub
         </a>{' '} */}
         |{' '}
-        <a href="mailto:abucrypto41@gmail.com" className="text-blue-400 hover:underline">
+        {/* <a href="mailto:abucrypto41@gmail.com" className="text-blue-400 hover:underline">
           Contact
-        </a>{' '}
+        </a>{' '} */}
         |{' '}
         <a href="https://buymeacoffee.com/batech" className="text-yellow-400 hover:underline">
           Buy Me a Coffee
