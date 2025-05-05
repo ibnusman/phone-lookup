@@ -3,7 +3,7 @@ export const telcoPrefixes = {
     MTN: ['07025', '07026', '0703', '0704', '0706', '0707', '0803', '0806', '0810', '0813', '0814', '0816', '0903', '0906', '0913', '0916'],
     Airtel: ['0701', '0708', '0802', '0808', '0812', '0901', '0902', '0904', '0907', '0911', '0912'],
     Glo: ['0705', '0805', '0807', '0811', '0815', '0905', '0915'],
-    '9Mobile': ['0809', '0817', '0818', '0908', '0909', '0901'], // Note: 0901 also listed under Airtel
+    '9Mobile': ['0809', '0817', '0818', '0908', '0909', '0901'], 
     Note: 'Mobile number portability (MNP) was introduced in Nigeria in 2013, so prefixes may not reflect the current network provider.'
   },
   Kenya: {
@@ -15,7 +15,7 @@ export const telcoPrefixes = {
   Ghana: {
     MTN: ['024', '054', '055', '057', '059'],
     Vodafone: ['020', '030', '050', '056'],
-    AirtelTigo: ['026', '027', '057', '055'], // Note: Overlaps with MTN on 055, 057
+    AirtelTigo: ['026', '027', '057', '055'], 
     Note: 'Mobile number portability (MNP) is supported in Ghana, so prefixes may not reflect the current network provider.'
   },
   USA: {
@@ -30,7 +30,7 @@ export const telcoPrefixes = {
   },
   SouthAfrica: {
     MTN: ['083', '060', '076', '078', '079'],
-    Vodacom: ['082', '071', '072', '074', '076'], // Note: Overlap with MTN on 076
+    Vodacom: ['082', '071', '072', '074', '076'], 
     CellC: ['084', '061', '062'],
     Telkom: ['081', '073'],
     Note: 'Mobile number portability (MNP) is likely supported in South Africa, so prefixes may not reflect the current network provider.'
@@ -38,20 +38,20 @@ export const telcoPrefixes = {
   Uganda: {
     Airtel: ['075', '070'],
     MTN: ['077', '078'],
-    Orange: ['079'], // Note: Orange may have exited or rebranded
+    Orange: ['079'], 
     Note: 'Mobile number portability (MNP) is likely supported in Uganda, so prefixes may not reflect the current network provider.'
   },
   Zambia: {
     MTN: ['076', '096'],
     Airtel: ['077', '097'],
-    Zamtel: ['095'], // Note: Zamtel also uses 0211-0218, but formatted as 095 for consistency
+    Zamtel: ['095'], 
     Note: 'Mobile number portability (MNP) is likely supported in Zambia, so prefixes may not reflect the current network provider.'
   },
   Tanzania: {
     Vodacom: ['074', '075', '076'],
-    Yas: ['065', '067', '071','077'], // Includes Zantel due to merger
+    Yas: ['065', '067', '071','077'], 
     Airtel: ['068', '069', '078'],
-    Halotel: ['062','061'], // Inferred; not directly listed in provided data
+    Halotel: ['062','061'], 
     Note: 'Mobile number portability (MNP) is likely supported in Tanzania, so prefixes may not reflect the current network provider.'
   }
 };
