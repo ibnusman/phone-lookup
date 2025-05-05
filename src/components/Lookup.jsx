@@ -306,14 +306,7 @@ const Lookup = () => {
       {/* <footer className="w-full max-w-md text-center">
         <div className="mb-4">
           <p className="text-gray-600 mb-2">Enjoying this tool? Support us!</p>
-          <a
-            href="https://buymeacoffee.com/yourusername"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
-          >
-            Buy Me a Coffee ☕
-          </a>
+         
         </div>
         <div className="h-20 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg shadow-sm">
           Ad Space (Google AdSense)
