@@ -33,9 +33,9 @@ const Footer = () => {
           Contact
         </a>{' '} */}
         |{' '}
-        <a href="https://buymeacoffee.com/batech" className="text-yellow-400 hover:underline">
+        {/* <a href="https://buymeacoffee.com/batech" className="text-yellow-400 hover:underline">
           Buy Me a Coffee
-        </a>
+        </a> */}
       </div>
     </footer>
   );
